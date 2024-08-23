@@ -1,4 +1,3 @@
-import { createResource } from "@/lib/actions/resources";
 import { openai } from "@ai-sdk/openai";
 import { convertToCoreMessages, streamText, tool } from "ai";
 import { z } from "zod";
@@ -17,13 +16,6 @@ export async function POST(req: Request) {
     if no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
     messages: convertToCoreMessages(messages),
     tools: {
-      addResource: tool({
-        description: `Add a resource to your knowledge base. If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
-        parameters: z.object({
-          content: z.string().describe("the content or resource to add to the knowledge base"),
-        }),
-        execute: async ({ content }) => createResource({ content }),
-      }),
       getInformation: tool({
         description: `get information from your knowledge base to answer questions.`,
         parameters: z.object({
