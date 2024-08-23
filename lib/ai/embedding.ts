@@ -1,10 +1,11 @@
+import { env } from "@/lib/env.mjs";
+
 import { embed, embedMany } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { db } from "../db";
-import { cosineDistance, desc, gt, sql } from "drizzle-orm";
-import { embeddings } from "../db/schema/embeddings";
+import { createClient } from "@supabase/supabase-js";
 
 const embeddingModel = openai.embedding("text-embedding-3-small");
+const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
 const generateChunks = (input: string): string[] => {
   return input
@@ -35,12 +36,11 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 
 export const findRelevantContent = async (userQuery: string) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
-  const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, userQueryEmbedded)})`;
-  const similarGuides = await db
-    .select({ name: embeddings.content, similarity })
-    .from(embeddings)
-    .where(gt(similarity, 0.5))
-    .orderBy((t) => desc(t.similarity))
-    .limit(4);
-  return similarGuides;
+  const { data: documents } = await supabase.rpc("match_documents", {
+    query_embedding: userQueryEmbedded,
+    match_threshold: 0.5, // Data threshold
+    match_count: 4, // Number of matches
+  });
+
+  return JSON.stringify(documents);
 };
