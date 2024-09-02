@@ -35,6 +35,7 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 };
 
 export const findRelevantContent = async (userQuery: string) => {
+  console.log(userQuery);
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const { data: documents } = await supabase.rpc("match_documents", {
     query_embedding: userQueryEmbedded,

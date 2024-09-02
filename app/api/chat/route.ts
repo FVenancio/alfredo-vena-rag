@@ -11,9 +11,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: openai("gpt-4o-mini"),
-    system: `You are a helpful assistant. Check your knowledge base before answering any questions.
-    Only respond to questions using information from tool calls.
-    if no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
+    system: `You are an AI assistant tasked with reformulating user queries to improve retrieval in a RAG system. Given the original query, rewrite it to be more specific, detailed, and likely to retrieve relevant information. After you have rewritten the query, check your knowledge base before answering any questions. Only respond to questions using information from tool calls. If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
     messages: convertToCoreMessages(messages),
     tools: {
       getInformation: tool({
