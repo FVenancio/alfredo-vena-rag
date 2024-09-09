@@ -34,13 +34,14 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
   return embedding;
 };
 
-export const findRelevantContent = async (userQuery: string) => {
+export const findRelevantContent = async (userQuery: string, document_type: string) => {
   console.log(userQuery);
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const { data: documents } = await supabase.rpc("match_documents", {
     query_embedding: userQueryEmbedded,
     match_threshold: 0.5, // Data threshold
-    match_count: 4, // Number of matches
+    match_count: 4, // Number of matches,
+    document_type_only: document_type === "null" ? null : document_type,
   });
 
   return JSON.stringify(documents);

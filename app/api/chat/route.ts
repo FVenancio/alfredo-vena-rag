@@ -23,11 +23,30 @@ Always answer back using the same language the user spoke in. If the user used P
     messages: convertToCoreMessages(messages),
     tools: {
       getInformation: tool({
-        description: `get information from your knowledge base to answer questions.`,
+        description: `Get information from your documents knowledge base to answer questions.`,
         parameters: z.object({
           question: z.string().describe("the users question"),
+          document_type: z
+            .enum([
+              "certidao_registo_predial",
+              "caderneta_predial",
+              "licenca_utilizacao",
+              "certidao_isencao",
+              "certidao_infraestruturas",
+              "ficha_tecnica_habitacao",
+              "certificado_energetico",
+              "planta_imovel",
+              "documento_kyc",
+              "documento_preferencia",
+              "null",
+            ])
+            .default("null")
+            .describe(
+              "The specific type of document the user wants to get information from. If you're not sure which, use 'null'."
+            ),
         }),
-        execute: async ({ question }) => findRelevantContent(question),
+        execute: async ({ question, document_type }) =>
+          findRelevantContent(question, document_type),
       }),
     },
   });
