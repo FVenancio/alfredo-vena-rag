@@ -44,5 +44,11 @@ export const findRelevantContent = async (userQuery: string, document_type: stri
     document_type_only: document_type === "null" ? null : document_type,
   });
 
+  console.log("\n");
+  documents.forEach((i: any, idx: number) => {
+    console.log(`${idx}. ----`);
+    console.log(i);
+  });
+
   return JSON.stringify(documents);
 };
